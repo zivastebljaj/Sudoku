@@ -22,8 +22,7 @@ class Sudoku:
         self.narisi_mrezo()
         self.prikazi_stevilke()
         self.plosca.bind('<Button-1>', self.klik)
-        self.plosca.bind('<Key>', self.vpis)
-        self.plosca.bind('<BackSpace>', self.izbris)
+        self.plosca.bind('<Key>', self.obdelaj_tipko)
         prikaz_gumbov = tk.Frame(okno)
         prikaz_gumbov.grid(row='1', column='0')
         self.preizkus = tk.Button(prikaz_gumbov,
@@ -53,18 +52,24 @@ class Sudoku:
         for i in range(10):
             if i % 3 == 0:
                 barva = 'black'
+                sirina = '2'
             else:
                 barva = 'gray'
+                sirina = '1'
             x1 = ODMIK + i * ROB
             y1 = ODMIK
             x2 = ODMIK + i * ROB
             y2 = VISINA - ODMIK
-            self.plosca.create_line(x1, y1, x2, y2, fill=barva)
+            self.plosca.create_line(x1, y1, x2, y2,
+                                    fill=barva,
+                                    width=sirina)
             x1 = ODMIK
             y1 = ODMIK + i * ROB
             x2 = SIRINA - ODMIK
             y2 = ODMIK + i * ROB
-            self.plosca.create_line(x1, y1, x2, y2, fill=barva)
+            self.plosca.create_line(x1, y1, x2, y2,
+                                    fill=barva,
+                                    width=sirina)
 
     def prikazi_stevilke(self):
         self.plosca.delete('stevilke')
@@ -98,16 +103,15 @@ class Sudoku:
                                      outline='red',
                                      tags='okvir')
 
-    def vpis(self, event):
+    def obdelaj_tipko(self, event):
         vrstica = self.vrstica
         stolpec = self.stolpec
         if event.char in '123456789' and self.igra[vrstica][stolpec] == None:
             self.igra[vrstica][stolpec] = int(event.char)
             self.prikazi_stevilke()
-
-    def izbris(self, event):
-        self.igra[self.vrstica][self.stolpec] = None
-        self.prikazi_stevilke()
+        elif event.keysym == 'BackSpace' or event.keysym == 'Delete':
+            self.igra[self.vrstica][self.stolpec] = None
+            self.prikazi_stevilke()
 
     def ponastavi(self):
         self.igra = m.Igra().ustvari_zacetno_plosco()
