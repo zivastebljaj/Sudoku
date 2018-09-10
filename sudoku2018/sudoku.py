@@ -23,6 +23,7 @@ class Sudoku:
         self.prikazi_stevilke()
         self.plosca.bind('<Button-1>', self.klik)
         self.plosca.bind('<Key>', self.obdelaj_tipko)
+
         prikaz_gumbov = tk.Frame(okno)
         prikaz_gumbov.grid(row='1', column='0')
         self.preizkus = tk.Button(prikaz_gumbov,
@@ -33,20 +34,21 @@ class Sudoku:
                                    text='Nova igra',
                                    command=self.ponastavi)
         self.nova_igra.grid(row='1', column='0')
+
         prikaz_oznake = tk.Frame(okno)
         prikaz_oznake.grid(row='2', column='0')
         self.oznaka = tk.Label(prikaz_oznake, text='')
         self.oznaka.grid(row='0', column='0')
         
     def prikazi_oznako(self):
+        #Nariše :), če je rešitev pravilna, in :(, če ni.
         prikaz_oznake = tk.Frame(okno)
         prikaz_oznake.grid(row='2', column='0')
         if m.Igra().preveri_pravilnost(self.igra):
             self.oznaka = tk.Label(prikaz_oznake, text=':)')
-            self.oznaka.grid(row='0', column='0')
         else:
             self.oznaka = tk.Label(prikaz_oznake, text=':(')     
-            self.oznaka.grid(row='0', column='0')
+        self.oznaka.grid(row='0', column='0')
 
     def narisi_mrezo(self):        
         for i in range(10):
@@ -56,6 +58,8 @@ class Sudoku:
             else:
                 barva = 'gray'
                 sirina = '1'
+
+            #Nariše navpične črte.
             x1 = ODMIK + i * ROB
             y1 = ODMIK
             x2 = ODMIK + i * ROB
@@ -63,6 +67,7 @@ class Sudoku:
             self.plosca.create_line(x1, y1, x2, y2,
                                     fill=barva,
                                     width=sirina)
+            #Nariše vodoravne črte.
             x1 = ODMIK
             y1 = ODMIK + i * ROB
             x2 = SIRINA - ODMIK
@@ -75,6 +80,7 @@ class Sudoku:
         self.plosca.delete('stevilke')
         for i in range(9):
             for j in range(9):
+                #Nastavi številke na sredino kvadratka.
                 x = ODMIK + j * ROB + ROB / 2
                 y = ODMIK + i * ROB + ROB / 2
                 vrednost = self.igra[i][j]
@@ -86,6 +92,7 @@ class Sudoku:
         x, y = event.x, event.y
         if ODMIK < x < SIRINA - ODMIK and ODMIK < y < VISINA - ODMIK:
             self.plosca.focus_set()
+            #Označi mesto klika kot vrstico in stolpec sudokuja.
             self.vrstica = (y  - ODMIK)// ROB
             self.stolpec = (x - ODMIK) // ROB
             self.oznaci_kvadratek()
@@ -94,6 +101,7 @@ class Sudoku:
 
 
     def oznaci_kvadratek(self):
+        #Nariše okvir okoli izbranega kvadratka.
         self.plosca.delete('okvir')
         x1 = ODMIK + self.stolpec * ROB + 1
         y1 = ODMIK + self.vrstica * ROB + 1
@@ -104,16 +112,17 @@ class Sudoku:
                                      tags='okvir')
 
     def obdelaj_tipko(self, event):
-        vrstica = self.vrstica
-        stolpec = self.stolpec
-        if event.char in '123456789' and self.igra[vrstica][stolpec] == None:
-            self.igra[vrstica][stolpec] = int(event.char)
-            self.prikazi_stevilke()
+        #Vpiše ali izbriše številko.
+        vr = self.vrstica
+        st = self.stolpec
+        if event.char in '123456789' and self.igra[vr][st] == None:
+            self.igra[vr][st] = int(event.char)
         elif event.keysym == 'BackSpace' or event.keysym == 'Delete':
             self.igra[self.vrstica][self.stolpec] = None
-            self.prikazi_stevilke()
+        self.prikazi_stevilke()
 
     def ponastavi(self):
+        #Ustvari nov sudoku in ga nariše.
         self.igra = m.Igra().ustvari_zacetno_plosco()
         self.pripravi_graficni_vmesnik()
 
